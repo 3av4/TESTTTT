@@ -88,7 +88,7 @@ check("شراء وتفعيل لقب", Boolean(C.currentUser().activeTitle));
 
 const ref = C.referralInfo();
 check("كود الإحالة", Boolean(ref.code));
-check("رابط الإحالة t.me", ref.link.includes("t.me/BitPoinBot"), ref.link);
+check("رابط الإحالة t.me", ref.link.includes("t.me/Bitpoin_bot"), ref.link);
 check("قائمة المدعوين", Array.isArray(ref.invited));
 
 check("لا قرض نشط", C.loanInfo().active === null);
