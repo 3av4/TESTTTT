@@ -1,0 +1,66 @@
+# =============================================================================
+# BitPoin (BTP) — نشر بنقرة على Render
+# -----------------------------------------------------------------------------
+# الاستخدام:
+#   1) ارفع هذا الملف إلى الفرع الرئيسي للمستودع.
+#   2) في Render: New → Blueprint → اختر المستودع → Apply.
+#   3) أدخل المتغيرات السرّية (BOT_TOKEN, JWT_SECRET, ADMIN_IDS…) عند الطلب.
+#
+# ملاحظات مهمة:
+#   • المشروع يستخدم Dockerfile الموجود في الجذر (Next.js + Express + grammY).
+#   • DATABASE_URL فارغ ⇒ قاعدة PGlite مدمجة (ملف على القرص).
+#     ⚠️ قرص Render المجاني مؤقت — البيانات تُفقد مع كل إعادة نشر.
+#        للبيانات الدائمة: أنشئ Postgres (Neon) وضع رابطه في DATABASE_URL.
+#   • لا تضع أي سرّ في هذا الملف — فقط متغيرات تُدخل من لوحة Render.
+# =============================================================================
+services:
+  - type: web
+    name: bitpoin
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      # ---------- واجبة ----------
+      - key: BOT_TOKEN
+        sync: false # توكن جديد من @BotFather بعد /revoke
+      - key: BOT_USERNAME
+        value: BitPoinBot
+      - key: JWT_SECRET
+        generateValue: true # Render يولّد سراً قوياً تلقائياً
+      - key: ADMIN_IDS
+        sync: false # معرّفك الرقمي من @userinfobot
+      - key: APP_URL
+        sync: false # https://bitpoin.onrender.com (يُملأ بعد أول نشر)
+
+      # ---------- قاعدة البيانات ----------
+      # اتركه فارغاً لاستخدام PGlite المدمجة (بيانات مؤقتة)
+      - key: DATABASE_URL
+        value: ""
+      - key: DB_ENGINE
+        value: auto
+
+      # ---------- الخادم ----------
+      - key: PORT
+        value: "3000"
+      - key: NODE_ENV
+        value: production
+
+      # ---------- البوت (webhook) ----------
+      # يُملأ بعد أول نشر ثم إعادة النشر
+      - key: TELEGRAM_WEBHOOK_URL
+        sync: false
+      - key: WEBHOOK_SECRET
+        generateValue: true
+
+      # ---------- الأمان ----------
+      - key: DEMO_MODE
+        value: "false"
+      - key: DEMO_ALLOW_PRODUCTION
+        value: "false"
+
+      # ---------- النسخ الاحتياطي ----------
+      - key: BACKUP_ENABLED
+        value: "false"
