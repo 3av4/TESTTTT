@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bitpoin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bitpoin_pass}
+      POSTGRES_DB: bitpoin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bitpoin -d bitpoin"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://bitpoin:${POSTGRES_PASSWORD:-bitpoin_pass}@db:5432/bitpoin
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_USERNAME: ${BOT_USERNAME:-BitPoinBot}
+      ADMIN_IDS: ${ADMIN_IDS}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      TELEGRAM_WEBHOOK_URL: ${TELEGRAM_WEBHOOK_URL:-}
+      DEMO_MODE: "false"
+      BACKUP_ENABLED: "true"
+      BACKUP_INTERVAL_HOURS: "6"
+      TRUST_PROXY: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - backups:/app/backups
+
+volumes:
+  pgdata:
+  backups:

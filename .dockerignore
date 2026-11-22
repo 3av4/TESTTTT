@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.gitignore
+db/pglite-data
+backups
+*.log
+.env
+.env.*
+!.env.example
+README.md
