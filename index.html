@@ -10,7 +10,7 @@
     <link rel="icon" href="docs/favicon.svg" type="image/svg+xml" />
     <script>
       // توجيه فوري إلى التطبيق
-      location.replace("./docs/index.html" + location.hash);
+      location.replace("./docs/" + (location.hash || "#/"));
     </script>
     <noscript><meta http-equiv="refresh" content="0; url=./docs/" /></noscript>
     <style>
