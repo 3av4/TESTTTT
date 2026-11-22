@@ -27,9 +27,9 @@ services:
       - key: BOT_TOKEN
         sync: false # توكن جديد من @BotFather بعد /revoke
       - key: ADMIN_IDS
-        sync: false # معرّفك الرقمي من @userinfobot
-      - key: APP_URL
-        sync: false # https://<اسم-خدمتك>.onrender.com
+        value: "8764194314" # Abdnoor — من @userinfobot
+      # APP_URL لا يُضبط هنا: Render يوفّر RENDER_EXTERNAL_URL تلقائياً
+      # و server/config.ts يستخدمه كاحتياطي. (اضبط APP_URL فقط إن أردت دومين مخصص)
 
       # ---------- مولّدة تلقائياً ----------
       - key: JWT_SECRET

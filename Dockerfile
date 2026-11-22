@@ -29,6 +29,8 @@ COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
+# نقطة الدخول — نسخها إلزامي لأن CMD يشغّل server.ts
+COPY --from=builder /app/server.ts ./server.ts
 RUN mkdir -p /app/backups /app/db/pglite-data
 EXPOSE 3000
 ENTRYPOINT ["/sbin/tini", "--"]

@@ -4,6 +4,33 @@
 
 ---
 
+## 🚀 نشر البوت + الموقع على Render (نقرة واحدة)
+
+الملف `render.yaml` جاهز. الخطوات: [docs/RENDER.md](docs/RENDER.md)
+
+**ما عليك فعله:**
+
+1. `/revoke` في @BotFather → توكن جديد
+2. Render → **New +** → **Blueprint** → اختر المستودع والفرع
+3. أدخل `BOT_TOKEN` فقط
+
+**كل شيء آخر تلقائي:**
+
+| الشي | كيف |
+|---|---|
+| `JWT_SECRET` | يولّده Render (`generateValue`) |
+| `WEBHOOK_SECRET` | مشتق من `JWT_SECRET` (ثابت عبر النوم) |
+| `APP_URL` | من `RENDER_EXTERNAL_URL` تلقائياً |
+| `PORT` | من Dockerfile (3000) |
+| **تسجيل الويبهوك** | **تلقائي عند الإقلاع** — `server/bot/autoWebhook.ts` |
+
+> لا Shell مطلوب، لا أوامر يدوية، لا خطوة ويبهوك.
+
+**تم التحقق:** الحاوية تعمل من مجلد نظيف مطابق للـ Dockerfile →
+`/healthz` = `db:true` · 10/10 صفحات = 200 · العمليات المالية (راتب/ألعاب/بنك/تحويل) تعمل · 0 أخطاء.
+
+---
+
 ## 🌐 الموقع المباشر (GitHub Pages)
 
 **الرابط: <https://3av4.github.io/TESTTTT/>**

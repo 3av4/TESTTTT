@@ -105,7 +105,20 @@ function resolveAppUrl(): string {
 const APP_URL = resolveAppUrl();
 const TRUST_PROXY = envBool("TRUST_PROXY", true);
 
-const WEBHOOK_SECRET = env("WEBHOOK_SECRET", "");
+/**
+ * سرّ الويبهوك.
+ *
+ * إن لم يُضبط، نشتقّه من JWT_SECRET (ثابت من Render عبر generateValue)
+ * بدل توليده عشوائياً. هذا مهم لأن Render المجاني ينام ويفيق كثيراً؛
+ * سرّ عشوائي لكل تشغيل يعني إعادة تسجيل الويبهوك عند كل إيقاظ.
+ * الاشتقاق يجعل السرّ ثابتاً ⇒ الويبهوك يبقى صالحاً عبر عمليات التشغيل.
+ *
+ * ملاحظة أمنية: من يملك JWT_SECRET يملك كل شيء أصلاً، فلا ضرر إضافي.
+ */
+const WEBHOOK_SECRET = env(
+  "WEBHOOK_SECRET",
+  crypto.createHash("sha256").update(`bitpoin-webhook:${JWT_SECRET}`).digest("hex").slice(0, 48),
+);
 const TELEGRAM_WEBHOOK_URL = env("TELEGRAM_WEBHOOK_URL");
 
 const JWT_COOKIE = "btp_session";

@@ -14,6 +14,7 @@ import { setupMiddleware } from "./middleware.js";
 import { registerCommands } from "./commands/index.js";
 import { registerCallbacks } from "./callbacks.js";
 import { sendHtml } from "./telegramApi.js";
+import { ensureWebhookRegistered } from "./autoWebhook.js";
 
 const log = logger.child("bot");
 
@@ -112,6 +113,8 @@ export async function startBot(): Promise<void> {
     // نستخدم راوت Express لاستقبال التحديثات (npm run bot:setup لتسجيل الرابط)
     markRunning("webhook");
     log.info("البوت يعمل بوضع Webhook", { endpoint: "/api/telegram/webhook/:secret" });
+    // تسجيل تلقائي إن لم يكن مسجّلاً (Render بلا Shell)
+    void ensureWebhookRegistered().catch(() => undefined);
     return;
   }
 
@@ -129,6 +132,15 @@ export async function startBot(): Promise<void> {
     }
   } catch {
     // تجاهل — نحاول polling على أي حال
+  }
+
+  // لا يوجد ويبهوك مسجّل ولا TELEGRAM_WEBHOOK_URL — إن كان لدينا رابط عام
+  // نسجّله بأنفسنا بدل polling (أفضل للاستضافة المجانية التي تنام).
+  const autoRegistered = await ensureWebhookRegistered().catch(() => false);
+  if (autoRegistered) {
+    markRunning("webhook");
+    log.info("البوت يعمل بوضع Webhook (سُجِّل تلقائياً)", { endpoint: "/api/telegram/webhook/:secret" });
+    return;
   }
 
   markRunning("polling");
