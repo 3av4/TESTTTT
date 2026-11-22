@@ -8,6 +8,7 @@ export interface BotState {
   updatesHandled: number;
   initialized: boolean;
   startupError: string | null;
+  lastErrorAt: string | null;
 }
 
 const state: BotState = {
@@ -17,6 +18,7 @@ const state: BotState = {
   updatesHandled: 0,
   initialized: false,
   startupError: null,
+  lastErrorAt: null,
 };
 
 export function markRunning(mode: "webhook" | "polling"): void {
@@ -32,6 +34,11 @@ export function markLastUpdate(): void {
 
 export function markError(message: string): void {
   state.startupError = message;
+  state.lastErrorAt = new Date().toISOString();
+}
+
+export function clearError(): void {
+  state.startupError = null;
 }
 
 export function markStopped(): void {

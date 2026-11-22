@@ -375,3 +375,30 @@ export interface GroupSettingsItem {
   maxBet: number | null;
   updatedAt: string;
 }
+
+/* ------------------------------ تشخيص البوت ------------------------------ */
+
+export interface BotSelfTestStep {
+  name: string;
+  ok: boolean;
+  detail: string;
+}
+
+export interface BotSelfTest {
+  steps: BotSelfTestStep[];
+  diagnosis: string;
+  botUsername: string | null;
+}
+
+export interface BotStatus {
+  configured: boolean;
+  mode: "webhook" | "polling";
+  botUsername: string | null;
+  running: boolean;
+  polling: boolean;
+  lastUpdateAt: string | null;
+  updatesHandled: number;
+  initialized: boolean;
+  startupError: string | null;
+  lastErrorAt?: string | null;
+}

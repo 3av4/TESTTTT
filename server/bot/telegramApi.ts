@@ -18,6 +18,11 @@ export interface TelegramApiResponse<T> {
   parameters?: { retry_after?: number; migrate_to_chat_id?: number };
 }
 
+/** استدعاء خام لأي دالة في Bot API — للفحص التشخيصي */
+export async function telegramApiRaw<T>(method: string, payload?: Record<string, unknown>): Promise<TelegramApiResponse<T>> {
+  return call<T>(method, payload);
+}
+
 async function call<T>(method: string, payload?: Record<string, unknown>): Promise<TelegramApiResponse<T>> {
   if (!config.BOT_TOKEN) return { ok: false, description: "BOT_TOKEN غير مضبوط" };
   const controller = new AbortController();

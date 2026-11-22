@@ -111,7 +111,14 @@ export function setupMiddleware(bot: Bot) {
       60,
     );
     if (!limited.allowed) {
-      log.debug("تجاوز حد معدل البوت", { telegramId: user.id, chatId: ctx.chat?.id });
+      log.debug("تجاوز حد معدل البوت", { telegramId: user.id, chatId: ctx.chat?.id, retryAfter: limited.retryAfter });
+      // لا نصمت في وجه المستخدم: نُخبره بالسبب في المحادثة الخاصة فقط (لتجنب إغراق القروبات)
+      if (!inGroup) {
+        const wait = limited.retryAfter > 0 ? ` بعد ${limited.retryAfter} ثانية` : " قليلاً";
+        await ctx
+          .reply(`⏳ أنت تُرسل الأوامر بسرعة كبيرة. انتظر${wait} ثم حاول مجدداً.`)
+          .catch(() => undefined);
+      }
       return;
     }
 

@@ -37,6 +37,7 @@ import {
 import { Badge, Button, Card, Field, SectionTitle, Skeleton, Stat } from "@/components/ui/primitives";
 import { RequireAuth } from "@/components/common/RequireAuth";
 import { AdminSection, AdminTable } from "@/components/admin/shared";
+import { BotDiagnostics } from "@/components/admin/BotDiagnostics";
 import { Avatar } from "@/components/ui/primitives";
 import { useToast } from "@/lib/toast";
 import { useAuth } from "@/lib/auth";
@@ -759,7 +760,6 @@ function SystemTab() {
   const { data: overview, mutate: mutateOverview } = useSWR<AdminOverview>("/admin/overview");
   const { data: backups, mutate: mutateBackups } = useSWR<Array<{ file: string; bytes: number; createdAt: string }>>("/admin/backups");
   const { data: groups } = useSWR<GroupSettingsItem[]>("/admin/groups");
-  const { data: botStatus } = useSWR<Record<string, unknown>>("/telegram/status", { refreshInterval: 60_000 });
   const [broadcast, setBroadcast] = useState({ title: "", body: "", telegram: true });
   const [broadcasting, setBroadcasting] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
@@ -820,29 +820,7 @@ function SystemTab() {
           </div>
         </AdminSection>
 
-        <AdminSection title="البوت والحالة" subtitle="تشخيص سريع">
-          <ul className="space-y-2 text-sm">
-            {[
-              { label: "وضع البوت", value: String(botStatus?.mode ?? "—") },
-              { label: "مشغّل", value: botStatus?.running ? "نعم ✅" : "لا" },
-              { label: "آخر تحديث", value: botStatus?.lastUpdateAt ? timeAgo(String(botStatus.lastUpdateAt)) : "—" },
-              { label: "تحديثات معالجة", value: String(botStatus?.updatesHandled ?? 0) },
-              { label: "اتصالات WS", value: String(overview?.realtime.connections ?? 0) },
-              { label: "جلسات نشطة", value: String(overview?.sessions.active ?? 0) },
-              { label: "سجل التدقيق", value: fmt(overview?.auditCount ?? 0) },
-            ].map((row) => (
-              <li key={row.label} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
-                <span className="text-slate-400">{row.label}</span>
-                <span className="font-bold text-white">{row.value}</span>
-              </li>
-            ))}
-            {botStatus?.startupError ? (
-              <li className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">
-                <AlertTriangle className="size-3.5" /> {String(botStatus.startupError)}
-              </li>
-            ) : null}
-          </ul>
-        </AdminSection>
+        <BotDiagnostics />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

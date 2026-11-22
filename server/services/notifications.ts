@@ -47,7 +47,7 @@ export async function sendTelegramToUser(
 }
 
 export interface NotifyOptions {
-  userId: number;
+  userId: number | string;
   title: string;
   body?: string;
   kind?: NotificationKind;
@@ -68,7 +68,7 @@ export async function notify(options: NotifyOptions): Promise<NotificationRow> {
   );
 
   events.emitEvent("notification", {
-    userId: options.userId,
+    userId: toBigNumber(options.userId),
     title: options.title,
     body: options.body ?? "",
     kind,

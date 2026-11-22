@@ -9,7 +9,7 @@ import { config } from "../config.js";
 import { logger } from "../logger.js";
 import type { Update } from "grammy/types";
 import { registerTelegramSender } from "../services/notifications.js";
-import { getBotStatus as statusOf, markRunning, markStopped, markError, markLastUpdate } from "./state.js";
+import { getBotStatus as statusOf, markRunning, markStopped, markError, markLastUpdate, clearError } from "./state.js";
 import { setupMiddleware } from "./middleware.js";
 import { registerCommands } from "./commands/index.js";
 import { registerCallbacks } from "./callbacks.js";
@@ -31,6 +31,9 @@ export async function createBot(): Promise<Bot | null> {
     client: {
       canUseWebhookReply: () => false,
       timeoutSeconds: 30,
+      // نستخدم fetch العالمي بدل shim الخاص بـ grammY ليتوافق مع اعتراض المحاكي
+      // ويلغي أي اعتماد على node-fetch القديم (يدعم AbortSignal الأصلي).
+      fetch: ((input: never, init?: never) => globalThis.fetch(input, init)) as never,
     },
   });
 
@@ -52,13 +55,31 @@ export async function createBot(): Promise<Bot | null> {
       .catch(() => undefined);
   });
 
-  // معالجة أخطاء الاتصال في polling
+  // معالجة أخطاء الاتصال في polling (مع كبح الضجيج في السجلات)
+  let lastNetworkWarningAt = 0;
   bot.api.config.use(async (prev, method, payload, signal) => {
     try {
-      return await prev(method, payload, signal);
+      const result = await prev(method, payload, signal);
+      // نجاح الاتصال يُلغي حالة الخطأ السابقة
+      if (method !== "getUpdates" && statusOf().startupError) clearError();
+      return result;
     } catch (error) {
       if (method === "getUpdates") return { ok: true, result: [] } as never;
-      log.warn("فشل استدعاء API البوت", { method, error: String(error) });
+      const now = Date.now();
+      const offline = /fetch|network|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|abort|ECONN/i.test(String(error));
+      if (offline) {
+        // تلجرام غير متاح: تنبيه مرة كل 30 ثانية فقط حتى لا تُغرق السجلات
+        if (now - lastNetworkWarningAt > 30_000) {
+          lastNetworkWarningAt = now;
+          log.warn("تعذّر الوصول إلى api.telegram.org — البوت لن يستقبل تحديثات حتى يُسمح بالشبكة", {
+            method,
+            hint: "تحقق من اتصال الخادم الخارجي أو استخدم سيرفراً بوصول مباشر لتلجرام",
+          });
+        }
+        markError("تعذّر الوصول إلى api.telegram.org");
+      } else {
+        log.warn("فشل استدعاء API البوت", { method, error: String(error) });
+      }
       throw error;
     }
   });

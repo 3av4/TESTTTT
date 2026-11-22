@@ -128,6 +128,19 @@ export async function getBoolean(key: SettingKey): Promise<boolean> {
   return ["1", "true", "yes", "on"].includes(raw);
 }
 
+/**
+ * كتابة إعداد مباشرة — للاختبارات والسكربتات فقط (تتجاوز التحقق الإداري).
+ * لا تستخدمها من الراوتات؛ استخدم updateSetting بدلاً منها.
+ */
+export async function setSettingForTest(key: SettingKey, value: string): Promise<void> {
+  await query(
+    `INSERT INTO system_settings (key, value) VALUES ($1, $2)
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+    [key, value],
+  );
+  invalidateSettingsCache();
+}
+
 /** قراءة كل الإعدادات دفعة واحدة (للواجهة/اللوحة) */
 export async function getAllSettings(): Promise<Record<string, string>> {
   const map = await loadAll();
