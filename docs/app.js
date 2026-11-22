@@ -7,7 +7,7 @@
   "use strict";
 
   var Core = window.BitPoinCore;
-  var BOT = "BitPoinBot";
+  var BOT = "Bitpoin_bot";
   var BOT_URL = "https://t.me/" + BOT;
 
   /* ============================== أدوات مساعدة ============================== */
@@ -372,7 +372,7 @@
           el("div", { class: "between" }, [
             el("div", {}, [
               el("h2", { class: "h2", text: "أوامر البوت جاهزة بضغطة واحدة" }),
-              el("p", { class: "muted mt-1", text: "كل أمر مكتوب وواضح — اضغط عليه ليُنسخ ثم الصقه في @BitPoinBot" }),
+              el("p", { class: "muted mt-1", text: "كل أمر مكتوب وواضح — اضغط عليه ليُنسخ ثم الصقه في @Bitpoin_bot" }),
             ]),
             button("كل الأوامر →", function () { go("/commands"); }, "btn-gold"),
           ]),
@@ -466,7 +466,7 @@
         el("h1", { class: "h1", html: '📋 أوامر البوت <span class="gradient-text">كاملة</span>' }),
         el("p", { class: "muted mt-2", text: "اضغط على أي أمر ليُنسخ تلقائياً — ثم الصقه في محادثة @" + BOT + " وأرسله." }),
         el("div", { class: "row mt-3", style: "flex-wrap:wrap" }, [
-          el("a", { class: "btn btn-primary", href: BOT_URL, target: "_blank", rel: "noopener", html: "✈️ افتح @BitPoinBot" }),
+          el("a", { class: "btn btn-primary", href: BOT_URL, target: "_blank", rel: "noopener", html: "✈️ افتح @Bitpoin_bot" }),
           button("🍀 التجربة السريعة بالموقع", function () { go("/games"); }, "btn-ghost"),
         ]),
       ]),
@@ -599,7 +599,7 @@
 
         el("div", { class: "text-center" }, [
           el("p", { class: "muted-sm", text: "لربط حسابك بالبوت (نفس الرصيد في الموقع وتلجرام):" }),
-          el("a", { class: "btn btn-ghost btn-block mt-2", href: BOT_URL, target: "_blank", rel: "noopener", html: "✈️ افتح @BitPoinBot وأرسل /start" }),
+          el("a", { class: "btn btn-ghost btn-block mt-2", href: BOT_URL, target: "_blank", rel: "noopener", html: "✈️ افتح @Bitpoin_bot وأرسل /start" }),
           el("p", { class: "muted-sm mt-3", style: "line-height:1.8", text: "ملاحظة: هذه النسخة تعمل بالكامل في متصفحك (GitHub Pages) — بياناتك محفوظة على جهازك فقط ولا تُرسل لأي خادم." }),
         ]),
       ], { className: "mt-8", strong: true }),
@@ -1420,7 +1420,7 @@
           el("li", { text: "سيؤكد البوت الربط، ويصبح رصيدك نفسه في الاثنين." }),
         ]),
         el("div", { class: "mt-3" }, [
-          el("a", { class: "btn btn-primary btn-block btn-lg", href: deepLink, target: "_blank", rel: "noopener", html: "✈️ افتح @BitPoinBot برابط الربط" }),
+          el("a", { class: "btn btn-primary btn-block btn-lg", href: deepLink, target: "_blank", rel: "noopener", html: "✈️ افتح @Bitpoin_bot برابط الربط" }),
         ]),
         el("div", { class: "row mt-2", style: "justify-content:center" }, [
           el("button", { class: "pill pill-neutral", style: "cursor:pointer", text: "/link " + code, onclick: function () { copyCommand("/link " + code); } }),
@@ -1434,7 +1434,7 @@
           button(user.telegramLinked ? "فك الربط" : "تأكيد الربط الآن", function () {
             try {
               var next = !user.telegramLinked;
-              Core.updateProfile({ telegramLinked: next, telegramUsername: next ? "BitPoinBot" : null });
+              Core.updateProfile({ telegramLinked: next, telegramUsername: next ? "Bitpoin_bot" : null });
               toast(next ? "✅ تم ربط الحساب" : "تم فك الربط", next ? "success" : "info");
               route();
             } catch (error) { fail(error); }

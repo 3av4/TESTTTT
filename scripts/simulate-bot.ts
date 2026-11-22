@@ -53,7 +53,7 @@ globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) =>
 
     switch (method) {
       case "getMe":
-        return ok({ id: 9107523489, is_bot: true, first_name: "BitPoin", username: "BitPoinBot", can_join_groups: true });
+        return ok({ id: 9107523489, is_bot: true, first_name: "BitPoin", username: "Bitpoin_bot", can_join_groups: true });
       case "getWebhookInfo":
         return ok({ url: "", has_custom_certificate: false, pending_update_count: 0 });
       case "deleteWebhook":
@@ -128,7 +128,7 @@ function callbackUpdate(data: string) {
       data,
       message: {
         message_id: messageId,
-        from: { id: 9107523489, is_bot: true, first_name: "BitPoin", username: "BitPoinBot" },
+        from: { id: 9107523489, is_bot: true, first_name: "BitPoin", username: "Bitpoin_bot" },
         chat: { id: CHAT_ID, type: "private", first_name: from.first_name, username: from.username },
         date: Math.floor(Date.now() / 1000),
         text: "/start",

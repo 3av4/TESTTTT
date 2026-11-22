@@ -161,12 +161,12 @@ export default function StatusPage() {
           دخول تجريبي
         </LinkButton>
         <a
-          href="https://t.me/BitPoinBot"
+          href="https://t.me/Bitpoin_bot"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200 hover:bg-white/10"
         >
-          <MessageCircle className="size-3.5" /> @BitPoinBot
+          <MessageCircle className="size-3.5" /> @Bitpoin_bot
         </a>
       </div>
     </div>

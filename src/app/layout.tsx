@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap"
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <meta name="telegram:channel" content="@BitPoinBot" />
+        <meta name="telegram:channel" content="@Bitpoin_bot" />
       </head>
       <body className="min-h-screen antialiased">
         <Providers>

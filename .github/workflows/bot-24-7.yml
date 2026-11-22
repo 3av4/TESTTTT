@@ -1,0 +1,89 @@
+# =============================================================================
+# 🤖 تشغيل البوت 24/7 مجاناً — عبر GitHub Actions
+# -----------------------------------------------------------------------------
+# لماذا هذا الحل؟
+#   • Render Free ينام بعد 15 دقيقة، فيتأخر رد البوت 30–60 ثانية
+#   • GitHub Actions لا ينام داخل التشغيل، ويعمل من شبكة تصل إلى تلجرام
+#   • مجاني تماماً ضمن حصة المستودع الخاص/العام
+#
+# كيف يعمل؟
+#   • كل 5 ساعات و50 دقيقة يبدأ تشغيل جديد (GitHub يحدّ كل job بـ 6 ساعات)
+#   • التشغيل السابق يُنهى تلقائياً عند بدء الجديد (concurrency)
+#   • البوت يعمل بـ polling (لا يحتاج رابطاً عاماً ولا ويبهوك)
+#
+# ⚠️ يتطلب سرّاً واحداً: BOT_TOKEN
+#   أضفه من: Settings → Secrets and variables → Actions → New repository secret
+# =============================================================================
+name: bot-24-7
+
+on:
+  schedule:
+    # كل 5 ساعات و50 دقيقة (يبقى ضمن حد 6 ساعات لكل job)
+    - cron: "50 */5 * * *"
+  workflow_dispatch: # تشغيل يدوي
+
+concurrency:
+  group: bot-24-7
+  cancel-in-progress: true # يوقف التشغيل السابق لتفادي Conflict على polling
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350 # أقل من 360 ليتيح بدء التشغيل التالي
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: تثبيت التبعيات
+        run: npm ci
+
+      - name: التحقق من التوكن
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          if [ -z "$BOT_TOKEN" ]; then
+            echo "❌ السر BOT_TOKEN غير مضبوط"
+            echo "أضفه من: Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          node -e "console.log('✔ التوكن موجود بطول ' + process.env.BOT_TOKEN.length)"
+
+      - name: فحص صحة البوت
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          node -e "
+          (async () => {
+            const r = await fetch('https://api.telegram.org/bot' + process.env.BOT_TOKEN + '/getMe');
+            const d = await r.json();
+            if (!d.ok) { console.error('❌ التوكن مرفوض:', d.description); process.exit(1); }
+            console.log('✔ البوت: @' + d.result.username + ' (id: ' + d.result.id + ')');
+          })();
+          "
+
+      - name: 🤖 تشغيل البوت (polling)
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_USERNAME: Bitpoin_bot
+          NODE_ENV: production
+          DATABASE_URL: ""
+          DB_ENGINE: auto
+          JWT_SECRET: ${{ secrets.BOT_TOKEN }}-bitpoin-jwt-secret-padding-please-change
+          ADMIN_IDS: "8764194314"
+          WEBHOOK_SECRET: ${{ secrets.BOT_TOKEN }}-webhook
+          TELEGRAM_WEBHOOK_URL: ""
+          APP_URL: ""
+          BACKUP_ENABLED: "false"
+          DEMO_MODE: "false"
+          DEMO_ALLOW_PRODUCTION: "false"
+        run: |
+          echo "بدء البوت — polling — $(date -u)"
+          timeout --signal=TERM 20000 npx tsx scripts/bot-only.ts || echo "انتهى التشغيل"

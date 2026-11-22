@@ -649,7 +649,7 @@
     var paid = user.referrals.filter(function (r) { return r.paid; });
     return {
       code: user.referralCode,
-      link: "https://t.me/BitPoinBot?start=ref_" + user.referralCode,
+      link: "https://t.me/Bitpoin_bot?start=ref_" + user.referralCode,
       invitedCount: user.referrals.length,
       pendingCount: user.referrals.length - paid.length,
       paidCount: paid.length,

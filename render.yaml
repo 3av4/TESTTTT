@@ -39,7 +39,7 @@ services:
 
       # ---------- ثابتة ----------
       - key: BOT_USERNAME
-        value: BitPoinBot
+        value: Bitpoin_bot
       - key: TELEGRAM_WEBHOOK_URL
         value: "" # يُملأ بعد أول نشر ثم أعد النشر
       - key: DATABASE_URL

@@ -328,7 +328,7 @@ export default function HomePage() {
             <Button
               variant="ghost"
               size="lg"
-              onClick={() => window.open("https://t.me/BitPoinBot", "_blank", "noopener")}
+              onClick={() => window.open("https://t.me/Bitpoin_bot", "_blank", "noopener")}
               icon={<Bot className="size-4" />}
             >
               افتح البوت

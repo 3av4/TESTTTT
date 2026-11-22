@@ -74,7 +74,7 @@ export function SiteFooter() {
               ))}
               <li>
                 <a
-                  href="https://t.me/BitPoinBot"
+                  href="https://t.me/Bitpoin_bot"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-slate-400 transition hover:text-btp-300"

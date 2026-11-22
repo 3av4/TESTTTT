@@ -79,7 +79,7 @@ Render → **New +** → **Blueprint** → `3av4/TESTTTT` → الفرع `arena/
 |---|---|---|
 | 1 | `https://<خدمتك>.onrender.com/healthz` | `{"ok":true,"data":{"db":true,...}}` |
 | 2 | الصفحة الرئيسية | تفتح |
-| 3 | [@BitPoinBot](https://t.me/BitPoinBot) → `/start` | يرد |
+| 3 | [@Bitpoin_bot](https://t.me/Bitpoin_bot) → `/start` | يرد |
 | 4 | `/menu` | قائمة أزرار |
 | 5 | `/daily` | راتب |
 | 6 | موقع → دخول | عبر تلجرام |
