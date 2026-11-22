@@ -380,7 +380,7 @@
             ["/start", "ابدأ استخدام البوت", "🟢"],
             ["/daily", "استلم راتبك اليومي", "🎁"],
             ["/balance", "اعرض رصيدك", "💰"],
-            ["/top", "لوحة المتصدرين", "🏆"],
+            ["/menu", "القائمة التفاعلية بالأزرار", "📱"],
           ].map(function (command) {
             return el("button", { class: "cmd-card", onclick: function () { copyCommand(command[0]); } }, [
               el("div", { class: "cmd-top" }, [
@@ -399,36 +399,47 @@
 
   /* ================================= الأوامر ================================= */
   var COMMANDS = [
-    { cmd: "/start", emoji: "🟢", desc: "بدء استخدام البوت — يعرض رسالة الترحيب والقائمة الرئيسية.", tag: "الكل" },
-    { cmd: "/help", emoji: "❓", desc: "قائمة كل الأوامر المتاحة مع شرح مبسط لكل واحد.", tag: "الكل" },
-    { cmd: "/balance", emoji: "💰", desc: "يعرض رصيدك النقدي ورصيد البنك وسلسلة الراتب.", tag: "الكل" },
-    { cmd: "/daily", emoji: "🎁", desc: "استلم راتبك اليومي (100–400 BTP) + مكافأة الاستمرارية. متاح كل 24 ساعة.", tag: "الكل" },
-    { cmd: "/profile", emoji: "👤", desc: "ملفك الشخصي: الرصيد، المستوى، الألعاب، واللقب النشط.", tag: "الكل" },
-    { cmd: "/send", emoji: "💸", desc: "تحويل BTP لمستخدم آخر. مثال: /send @username 500 — ضريبة 5% على المحوّل.", tag: "الكل" },
-    { cmd: "/top", emoji: "🏆", desc: "لوحة المتصدرين عالمياً، أو داخل القروب الحالي.", tag: "الكل" },
-    { cmd: "/history", emoji: "📜", desc: "آخر 10 عمليات على حسابك (تحويلات، أرباح، رواتب…).", tag: "الكل" },
-    { cmd: "/daily", emoji: "📊", desc: "حالة الراتب: هل هو متاح؟ وكم تبقّى للراتب القادم؟", tag: "الكل", alias: true },
-    { cmd: "/dice", emoji: "🎲", desc: "لعبة النرد. مثال: /dice 100 high — الفوز ×2 (عالٍ 4-6 أو منخفض 1-3).", tag: "لعبة" },
-    { cmd: "/coinflip", emoji: "🪙", desc: "لعبة العملة. مثال: /coinflip 100 heads — الفوز ×2.", tag: "لعبة" },
-    { cmd: "/slots", emoji: "🎰", desc: "ماكينة الحظ. ثلاثة رموز متطابقة تعطي حتى ×10. مثال: /slots 50", tag: "لعبة" },
-    { cmd: "/roulette", emoji: "🎡", desc: "الروليت. مثال: /roulette 100 red — أحمر/أسود ×2، أخضر ×14.", tag: "لعبة" },
-    { cmd: "/rob", emoji: "🥷", desc: "حاول سرقة مستخدم آخر. مثال: /rob @username — نجاح 40%، فشل يعاقبك بـ20%.", tag: "اقتصاد" },
-    { cmd: "/bank", emoji: "🏦", desc: "معلومات البنك وإيداعاتك. الأوامر الفرعية: /bank deposit 500 و /bank withdraw 200.", tag: "اقتصاد" },
-    { cmd: "/shop", emoji: "🛍️", desc: "عرض عناصر المتجر: ألقاب، شارات، مضاعفات، ودروع.", tag: "اقتصاد" },
-    { cmd: "/buy", emoji: "🛒", desc: "شراء عنصر من المتجر. مثال: /buy title_whale", tag: "اقتصاد" },
-    { cmd: "/gift", emoji: "🎀", desc: "إرسال هدية BTP لمستخدم. مثال: /gift @username 250", tag: "اقتصاد" },
-    { cmd: "/redeem", emoji: "🎟️", desc: "استرداد كود هدية. مثال: /redeem BTPGIFT1", tag: "اقتصاد" },
-    { cmd: "/referral", emoji: "👥", desc: "رابط الإحالة الخاص بك + أرباحك ومكافآتك.", tag: "اقتصاد" },
-    { cmd: "/loan", emoji: "💳", desc: "قرض حتى 5000 BTP. مثال: /loan 1000 — السداد خلال 24 ساعة بفائدة 10%.", tag: "اقتصاد" },
+    { cmd: "/start", emoji: "🟢", desc: "ابدأ استخدام BitPoin — يعرض رسالة الترحيب والقائمة الرئيسية.", tag: "الكل" },
+    { cmd: "/help", emoji: "❓", desc: "قائمة كل الأوامر مع شرح مبسط لكل واحد.", tag: "الكل" },
+    { cmd: "/menu", emoji: "📱", desc: "القائمة الرئيسية التفاعلية بأزرار — بديل عن حفظ الأوامر.", tag: "الكل" },
+    { cmd: "/balance", emoji: "💰", desc: "رصيدك النقدي ورصيد البنك. اختصار: /b أو /wallet", tag: "الكل" },
+    { cmd: "/daily", emoji: "🎁", desc: "استلم راتبك اليومي (100–400 BTP) + مكافأة الاستمرارية. اختصار: /work", tag: "الكل" },
+    { cmd: "/profile", emoji: "👤", desc: "ملفك وإحصائياتك ولقبك النشط. اختصار: /me", tag: "الكل" },
+    { cmd: "/send", emoji: "💸", desc: "تحويل BTP: /send @username 500 — أو بالرد على رسالة المستخدم.", tag: "الكل" },
+    { cmd: "/top", emoji: "🏆", desc: "لوحة المتصدرين عالمياً أو داخل القروب. اختصار: /leaderboard", tag: "الكل" },
+    { cmd: "/history", emoji: "📜", desc: "آخر عملياتك (تحويلات، أرباح، رواتب…). اختصار: /log", tag: "الكل" },
+    { cmd: "/dice", emoji: "🎲", desc: "لعبة النرد: /dice 100 high — الفوز ×2 (عالٍ 4-6 أو منخفض 1-3).", tag: "لعبة" },
+    { cmd: "/coinflip", emoji: "🪙", desc: "لعبة العملة: /coinflip 100 heads — الفوز ×2. اختصار: /cf", tag: "لعبة" },
+    { cmd: "/slots", emoji: "🎰", desc: "ماكينة الحظ: /slots 50 — ثلاثة متطابقة حتى ×10.", tag: "لعبة" },
+    { cmd: "/roulette", emoji: "🎡", desc: "الروليت: /roulette 100 red — أحمر/أسود ×2، أخضر ×14. اختصار: /rl", tag: "لعبة" },
+    { cmd: "/rob", emoji: "🥷", desc: "سرقة مستخدم: /rob @username أو بالرد — نجاح 40%، والفشل يعاقبك.", tag: "اقتصاد" },
+    { cmd: "/bank", emoji: "🏦", desc: "البنك والفائدة: /bank deposit 500 أو /bank withdraw 200.", tag: "اقتصاد" },
+    { cmd: "/shop", emoji: "🛍️", desc: "المتجر: ألقاب، شارات، مضاعفات، ودروع. اختصار: /store", tag: "اقتصاد" },
+    { cmd: "/buy", emoji: "🛒", desc: "شراء عنصر: /buy title_whale — الكود يظهر في /shop.", tag: "اقتصاد" },
+    { cmd: "/gift", emoji: "🎀", desc: "إهداء عملات لمستخدم: /gift @username 250 (أو بالرد).", tag: "اقتصاد" },
+    { cmd: "/redeem", emoji: "🎟️", desc: "استرداد كود هدية: /redeem BTPGIFT1", tag: "اقتصاد" },
+    { cmd: "/referral", emoji: "👥", desc: "رابط الإحالة الخاص بك + أرباحك. اختصار: /ref أو /invite", tag: "اقتصاد" },
+    { cmd: "/loan", emoji: "💳", desc: "قرض حتى 5000 BTP: /loan 1000 — سداد خلال 24 ساعة بفائدة 10%.", tag: "اقتصاد" },
     { cmd: "/settings", emoji: "⚙️", desc: "إعدادات القروب: الألعاب، الاقتصاد، الترحيب، حدود الرهان.", tag: "قروب", group: true },
-    { cmd: "/top", emoji: "🥇", desc: "ترتيب أغنى أعضاء القروب الحالي (يعمل داخل القروبات).", tag: "قروب", group: true },
-    { cmd: "/addcoins", emoji: "➕", desc: "منح BTP لمستخدم (أدمن فقط). مثال: /addcoins @user 1000", tag: "أدمن", admin: true },
-    { cmd: "/removecoins", emoji: "➖", desc: "خصم BTP من مستخدم (أدمن فقط).", tag: "أدمن", admin: true },
-    { cmd: "/ban", emoji: "🚫", desc: "حظر مستخدم من المنصة بالكامل (أدمن فقط).", tag: "أدمن", admin: true },
-    { cmd: "/unban", emoji: "✅", desc: "رفع الحظر عن مستخدم (أدمن فقط).", tag: "أدمن", admin: true },
-    { cmd: "/broadcast", emoji: "📢", desc: "إرسال رسالة لكل المستخدمين (أدمن فقط).", tag: "أدمن", admin: true },
-    { cmd: "/setfee", emoji: "🧾", desc: "تعديل نسبة الضريبة أو الرسوم (أدمن فقط).", tag: "أدمن", admin: true },
-    { cmd: "/stats", emoji: "📈", desc: "إحصاءات المنصة الكاملة: المستخدمون، الحجم، الخزينة (أدمن فقط).", tag: "أدمن", admin: true },
+    { cmd: "/top", emoji: "🥇", desc: "ترتيب أغنى أعضاء القروب الحالي — داخل المجموعات.", tag: "قروب", group: true },
+    { cmd: "/price", emoji: "📈", desc: "سعر الصرف واقتصاد العملة. اختصار: /economy أو /market", tag: "معلومات" },
+    { cmd: "/about", emoji: "ℹ️", desc: "عن BitPoin وميزاته. اختصار: /info", tag: "معلومات" },
+    { cmd: "/guide", emoji: "📖", desc: "دليل الاستخدام خطوة بخطوة. اختصار: /tutorial", tag: "معلومات" },
+    { cmd: "/search", emoji: "🔍", desc: "ابحث عن مستخدم: /search amin. اختصار: /find", tag: "معلومات" },
+    { cmd: "/addcoins", emoji: "➕", desc: "منح BTP: /addcoins @user 1000 [سبب] — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/removecoins", emoji: "➖", desc: "خصم BTP: /removecoins @user 100 [سبب] — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/ban", emoji: "🚫", desc: "حظر مستخدم من المنصة — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/unban", emoji: "✅", desc: "رفع الحظر عن مستخدم — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/broadcast", emoji: "📢", desc: "بث رسالة لكل المستخدمين — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/setfee", emoji: "🧾", desc: "تعديل الضرائب والرسوم — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/stats", emoji: "📊", desc: "إحصائيات النظام: المستخدمون، الحجم، الخزينة — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/createcode", emoji: "🎫", desc: "إنشاء كود هدية قابل للاسترداد — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/setoption", emoji: "🔧", desc: "تعديل إعداد نظام — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/setgroup", emoji: "👨‍👩‍👦", desc: "إعدادات القروب الافتراضية — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/users", emoji: "👥", desc: "قائمة المستخدمين والبحث الإداري — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/award", emoji: "🏅", desc: "منح مكافأة/شارة لمستخدم — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/backup", emoji: "💾", desc: "إنشاء نسخة احتياطية — أدمن فقط.", tag: "أدمن", admin: true },
+    { cmd: "/admin", emoji: "👑", desc: "دليل أوامر الإدارة الكامل — أدمن فقط.", tag: "أدمن", admin: true },
   ];
 
   function copyCommand(command) {
@@ -461,7 +472,7 @@
       ]),
     );
 
-    var tags = ["الكل", "لعبة", "اقتصاد", "قروب", "أدمن"];
+    var tags = ["الكل", "لعبة", "اقتصاد", "قروب", "معلومات", "أدمن"];
     var tabsBox = el("div", { class: "tabs" });
     var gridBox = el("div", { class: "cmd-grid" });
     var countBox = el("p", { class: "muted-sm mt-3" });
@@ -470,7 +481,7 @@
       gridBox.innerHTML = "";
       var list = COMMANDS.filter(function (c) { return filter === "الكل" || c.tag === filter; });
       list.forEach(function (command) {
-        var tagClass = command.tag === "أدمن" ? "admin" : command.tag === "قروب" ? "group" : "";
+        var tagClass = command.tag === "أدمن" ? "admin" : command.tag === "قروب" ? "group" : command.tag === "معلومات" ? "group" : "";
         gridBox.appendChild(
           el("button", { class: "cmd-card", onclick: function () { copyCommand(command.cmd); } }, [
             el("div", { class: "cmd-top" }, [
@@ -482,7 +493,7 @@
           ]),
         );
       });
-      countBox.textContent = list.length + " أمر معروض · اضغط للنسخ";
+      countBox.textContent = list.length + " أمر معروض · اضغط للنسخ" + (filter === "الكل" ? " · 41 أمراً إجمالاً بكل الصيغ" : "");
     }
 
     tags.forEach(function (tag) {
