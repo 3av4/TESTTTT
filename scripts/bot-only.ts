@@ -14,6 +14,7 @@
 import { config } from "../server/config.js";
 import { logger } from "../server/logger.js";
 import { closePool, migrate } from "../server/db.js";
+import { startEmbeddedDatabase, stopEmbeddedDatabase } from "../server/pglite.js";
 import { startBot, stopBot, getBotStatus } from "../server/bot/index.js";
 import { getWebhookInfo } from "../server/bot/telegramApi.js";
 
@@ -29,6 +30,13 @@ async function main() {
     log.error("BOT_TOKEN غير مضبوط — لا يمكن تشغيل البوت.");
     process.exit(1);
   }
+
+  // تشغيل قاعدة PGlite المدمجة إن لم يكن هناك Postgres خارجي.
+  // بدونه يفشل الاتصال بـ 127.0.0.1:5432 (خطأ ECONNREFUSED).
+  const embedded = await startEmbeddedDatabase();
+  log.info("قاعدة البيانات جاهزة", {
+    mode: embedded.started || embedded.port ? "pglite" : "postgresql",
+  });
 
   await migrate();
   await startBot();
@@ -55,6 +63,7 @@ async function main() {
     log.info("إيقاف البوت", { signal });
     await stopBot().catch(() => undefined);
     await closePool().catch(() => undefined);
+    await stopEmbeddedDatabase().catch(() => undefined);
     process.exit(0);
   };
   process.on("SIGINT", () => void shutdown("SIGINT"));
@@ -64,5 +73,6 @@ async function main() {
 main().catch(async (error) => {
   log.error("فشل تشغيل البوت المستقل", { error: String(error) });
   await closePool().catch(() => undefined);
+  await stopEmbeddedDatabase().catch(() => undefined);
   process.exit(1);
 });
