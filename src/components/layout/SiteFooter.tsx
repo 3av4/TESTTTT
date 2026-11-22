@@ -14,6 +14,7 @@ const LEGAL = [
   { href: "/legal/terms", label: "الشروط والأحكام" },
   { href: "/legal/privacy", label: "الخصوصية" },
   { href: "/legal/fairness", label: "عدالة الألعاب" },
+  { href: "/status", label: "حالة النظام" },
 ];
 
 export function SiteFooter() {

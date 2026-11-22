@@ -76,8 +76,14 @@ if (isProduction && !ADMIN_PASSWORD) {
 if (isProduction && ADMIN_PASSWORD && ADMIN_PASSWORD.length < 12) {
   console.warn("[config] ADMIN_PASSWORD قصير (أقل من 12 حرفاً) — استخدم كلمة مرور أقوى في الإنتاج.");
 }
-if (isProduction && envBool("DEMO_MODE", false)) {
-  console.warn("[config] DEMO_MODE=true في بيئة إنتاج — سيُتجاهل تماماً ولا يُفعَّل الدخول التجريبي.");
+if (isProduction && envBool("DEMO_MODE", false) && !envBool("DEMO_ALLOW_PRODUCTION", false)) {
+  console.warn("[config] DEMO_MODE=true في بيئة إنتاج — سيُتجاهل. للتفعيل المؤقت في بيئة معاينة فقط اضبط DEMO_ALLOW_PRODUCTION=true.");
+}
+if (isProduction && envBool("DEMO_ALLOW_PRODUCTION", false)) {
+  console.warn(
+    "⚠️ [config] الدخول التجريبي مُفعَّل على بيئة إنتاج (DEMO_ALLOW_PRODUCTION=true). " +
+      "هذا يسمح لأي زائر بالدخول كمدير! استخدمه في بيئات المعاينة فقط وأطفئه قبل النشر الحقيقي.",
+  );
 }
 
 const PORT = envInt("PORT", 3000);
@@ -140,7 +146,9 @@ export const config = {
   DATA_DIR,
   EMBEDDED_PG_PORT,
   /** وضع العرض التجريبي: يفعّل دخولاً تجريبياً سريعاً للواجهة (ممنوع في الإنتاج) */
-  DEMO_MODE: envBool("DEMO_MODE", false) && environment !== "production",
+  DEMO_MODE:
+    envBool("DEMO_MODE", false) &&
+    (environment !== "production" || envBool("DEMO_ALLOW_PRODUCTION", false)),
   RATE_LIMIT_ENABLED: envBool("RATE_LIMIT_ENABLED", true),
   TRUST_TELEGRAM_PROXY: envBool("TRUST_TELEGRAM_PROXY", true),
 } as const;

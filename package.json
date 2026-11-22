@@ -16,7 +16,9 @@
     "bot:delete": "tsx scripts/delete-webhook.ts",
     "typecheck": "tsc --noEmit",
     "smoke": "tsx scripts/smoke.ts",
-    "bot:simulate": "tsx scripts/simulate-bot.ts"
+    "bot:simulate": "tsx scripts/simulate-bot.ts",
+    "bot:only": "tsx scripts/bot-only.ts",
+    "keepalive": "tsx scripts/keepalive.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.17",
