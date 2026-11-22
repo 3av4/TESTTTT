@@ -87,7 +87,22 @@ if (isProduction && envBool("DEMO_ALLOW_PRODUCTION", false)) {
 }
 
 const PORT = envInt("PORT", 3000);
-const APP_URL = env("APP_URL", `http://localhost:${PORT}`).replace(/\/+$/, "");
+/**
+ * رابط التطبيق العام.
+ *
+ * الترتيب: APP_URL ← RENDER_EXTERNAL_URL ← localhost
+ *
+ * ملاحظة: لا نستخدم env() هنا لأنها تعتبر السلسلة الفارغة "غير مضبوطة" وتقفز
+ * للاحتياطي — وهذا صحيح. لكن المشكلة أن dotenv قد يضع APP_URL فارغاً في الإنتاج،
+ * بينما RENDER_EXTERNAL_URL يوفّره Render تلقائياً. لذا نقرأ الاثنين مباشرة.
+ */
+function resolveAppUrl(): string {
+  const explicit = (process.env.APP_URL ?? "").trim();
+  const renderUrl = (process.env.RENDER_EXTERNAL_URL ?? "").trim();
+  const chosen = explicit || renderUrl || `http://localhost:${PORT}`;
+  return chosen.replace(/\/+$/, "");
+}
+const APP_URL = resolveAppUrl();
 const TRUST_PROXY = envBool("TRUST_PROXY", true);
 
 const WEBHOOK_SECRET = env("WEBHOOK_SECRET", "");

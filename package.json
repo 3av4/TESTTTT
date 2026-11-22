@@ -19,7 +19,8 @@
     "bot:simulate": "tsx scripts/simulate-bot.ts",
     "bot:only": "tsx scripts/bot-only.ts",
     "keepalive": "tsx scripts/keepalive.ts",
-    "webhook:set": "tsx scripts/set-webhook.ts"
+    "webhook:set": "tsx scripts/set-webhook.ts",
+    "render:setup": "tsx scripts/render-setup.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.17",

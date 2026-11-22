@@ -1,180 +1,173 @@
-# 🚀 نشر BitPoin على Render (دليل المبتدئ)
+# 🚀 نشر BitPoin على Render — دليل مبني على أخطاء حقيقية
 
-> الهدف: بوت تلجرام + الموقع يشتغلان على رابط عام، مجاناً، بدون بطاقة بنكية.
+> هذا الدليل مصحّح بعد تجربة فعلية على Render. كل خطوة هنا يوجد سبب لحدوثها.
 
 ---
 
-## 0) قبل ما تبدأ (5 دقائق)
+## ⚠️ اقرأ هذا أولاً: 5 مصائد في Render
 
-| # | المهمة | من وين |
+| # | المصيدة | ما يحدث | الحل |
+|---|---|---|---|
+| 1 | **Build Command يدوي** `npm install && npm run build` | يعمل، لكنه يخالف Dockerfile ويعرّضك لاختلاف البيئة | استخدم **Docker** — لا تكتب أي أمر بناء |
+| 2 | **Start Command** `npm run start` | ❌ **يفشل** — `npm run start` = `NODE_ENV=production tsx server.ts` وهذا صيغة bash لا تعمل كـ start command على Render (يرسله لـ `/bin/sh` بلا tsx في PATH أحياناً) | Dockerfile فيه `CMD ["npx","tsx","server.ts"]` |
+| 3 | **خطة Free بلا Shell** | ❌ لا يوجد Shell في Free → `npm run webhook:set` **لا يمكن تنفيذه** | استخدم `npm run render:setup` من جهازك |
+| 4 | **`JWT_SECRET` غير مضبوط** | ❌ الخادم يرفض الإقلاع: `JWT_SECRET مطلوب` | اضغط **Generate** في Render |
+| 5 | **`PORT` بلا قيمة** (كما في ملفك المصدَّر) | ❌ الحاوية لا تعرف المنفذ | Dockerfile يضبط `PORT=3000` تلقائياً |
+
+**ملاحظة على ملفك المصدَّر:** `runtime: node` + `buildCommand` + `startCommand` = إعداد يدوي. المشروع مبني لـ **Docker**. الفرق ليس شكلياً: الـ Dockerfile يضمّ `tini` و`postgresql-client` ويضبط `PORT` و`CMD` الصحيح.
+
+---
+
+## الخطوة 0 — احذف الخدمة القديمة
+
+Render → خدمتك → **Settings** → أسفل الصفحة → **Delete Web Service**
+
+> لازم، لأن Render يرفض وجود خدمة يدوية بنفس اسم خدمة Blueprint.
+
+---
+
+## الخطوة 1 — المتطلبات (5 دقائق)
+
+| # | المهمة | المصدر |
 |---|---|---|
-| 1 | **توكن بوت جديد** ⚠️ | [@BotFather](https://t.me/BotFather) → `/revoke` → اختر بوتك |
-| 2 | **معرّفك الرقمي** | [@userinfobot](https://t.me/userinfobot) → Start → الرقم |
-| 3 | **حساب Render** | [render.com](https://render.com) → Sign up with GitHub |
+| 1 | **توكن بوت جديد** | [@BotFather](https://t.me/BotFather) → `/revoke` → اختر بوتك |
+| 2 | **معرّفك** `8764194314` ✅ (جاهز من رسالتك) | — |
+| 3 | حساب Render | [render.com](https://render.com) — Sign up with GitHub |
 
-> 🔴 **لا ترسل التوكن لأي أحد.** يُدخل مباشرة في لوحة Render.
+> 🔴 **لا ترسل التوكن لأي أحد ولا تضعه في Git.** يدخل في لوحة Render فقط.
 
 ---
 
-## 1) إنشاء الخدمة
-
-### الطريقة أ — Blueprint (الأسهل، ملف `render.yaml` موجود)
+## الخطوة 2 — النشر بنقرة (Blueprint)
 
 1. Render → **New +** → **Blueprint**
-2. اختر مستودع `3av4/TESTTTT`
-3. Render يقرأ `render.yaml` ويعرض الخدمة → **Apply**
-4. سيسألك عن القيم السرّية (`BOT_TOKEN`, `ADMIN_IDS`, `APP_URL`) → أدخلها
+2. اختر `3av4/TESTTTT`
+3. **Branch:** `arena/e971f73e-testttt`
+4. Render يقرأ `render.yaml` → **Apply**
 
-### الطريقة ب — يدوياً (لو ما ظهر Blueprint)
+سيسألك عن 3 قيم فقط:
 
-1. Render → **New +** → **Web Service**
-2. **Connect** مستودع `3av4/TESTTTT`
-3. املأ الخانات:
-
-| الخانة | القيمة |
+| المتغير | القيمة |
 |---|---|
-| **Name** | `bitpoin` |
-| **Region** | `Frankfurt (EU Central)` |
-| **Branch** | الفرع الذي تريد النشر منه |
-| **Runtime** | **Docker** |
-| **Dockerfile Path** | `./Dockerfile` |
-| **Instance Type** | **Free** |
-| **Health Check Path** | `/healthz` |
+| `BOT_TOKEN` | التوكن من الخطوة 1 🔴 |
+| `ADMIN_IDS` | `8764194314` |
+| `APP_URL` | `https://bitpoin.onrender.com` (أو اسم خدمتك) |
 
-> لا تضبط Build/Start Command — Dockerfile يتكفل بهما.
-
-4. **Create Web Service**
+`JWT_SECRET` و`WEBHOOK_SECRET` يولّدهما Render تلقائياً (`generateValue: true`).
+`PORT` و`NODE_ENV` و`DATABASE_URL` كلها مضبوطة في `render.yaml` و`Dockerfile`.
 
 ---
 
-## 2) متغيرات البيئة (Environment)
+## الخطوة 3 — انتظر البناء
 
-Render → خدمتك → **Environment** → أضف:
+Render → **Logs**. ابحث عن:
 
-| المتغير | القيمة | ملاحظة |
+```
+[server] BitPoin يعمل على http://0.0.0.0:3000
+```
+
+ثم افتح `https://<خدمتك>.onrender.com/healthz`:
+
+```json
+{"ok":true,"data":{"db":true,"uptime":12,"env":"production",...}}
+```
+
+> إذا ظهر `db:false` → أعد النشر. إذا لم يقلع أصلاً → اقرأ Logs:
+> `JWT_SECRET مطلوب` يعني انسَ `Generate` على المتغير.
+
+---
+
+## الخطوة 4 — الويبهوك (الحرجة)
+
+**لا يوجد Shell في الخطة المجانية.** نفّذ من **جهازك** (Terminal على Mac/Linux، أو CMD/PowerShell على Windows مع Node.js مثبتاً):
+
+```bash
+BOT_TOKEN=<التوكن> PUBLIC_URL=https://<خدمتك>.onrender.com npx tsx scripts/render-setup.ts
+```
+
+أو باستخدام السكربت الجاهز (بعد `git clone` + `npm install`):
+
+```bash
+npm run render:setup -- --token <التوكن> --url https://<خدمتك>.onrender.com
+```
+
+**ما يفعله السكربت:**
+
+1. يتحقق من التوكن عبر `getMe` ويطبع اسم البوت
+2. يسجّل الويبهوك على تلجرام
+3. يتحقق بـ `getWebhookInfo` أن الرابط مطابق
+4. **يطبع القيم** التي تنسخها إلى Render
+
+المخرجات المتوقعة:
+
+```
+✔ البوت: @BitPoinBot (id: 123456789)
+✔ تم تسجيل الويبهوك
+✔ تحقق: getWebhookInfo → مطابق
+
+القيم التي تنسخها إلى Render → Environment:
+TELEGRAM_WEBHOOK_URL = https://bitpoin.onrender.com
+WEBHOOK_SECRET       = a1b2c3...
+APP_URL              = https://bitpoin.onrender.com
+```
+
+**انسخها إلى Render → Environment → Save Changes.**
+
+> ⚠️ **مهم:** `TELEGRAM_WEBHOOK_URL` يجب أن يكون **أصل الرابط فقط** (بدون `/api/...`).
+> الكود يبني المسار الكامل بنفسه: `${APP_URL}/api/telegram/webhook/${WEBHOOK_SECRET}`.
+
+---
+
+## الخطوة 5 — اختبار
+
+1. [@BitPoinBot](https://t.me/BitPoinBot) → **Start**
+2. `/menu` → قائمة بأزرار
+3. `/balance` → 1000 BTP
+4. `/daily` → الراتب
+5. `/admin` → يجب أن يعمل (رقمك في `ADMIN_IDS`)
+
+**الموقع:** `https://<خدمتك>.onrender.com` → دخول عبر تلجرام.
+
+---
+
+## الخطوة 6 — ما يجب أن تتوقعه
+
+| الشي | الواقع | ملاحظة |
 |---|---|---|
-| `BOT_TOKEN` | التوكن الجديد | 🔴 سرّي |
-| `BOT_USERNAME` | `BitPoinBot` | بدون @ |
-| `JWT_SECRET` | اضغط **Generate** | Render يولّده |
-| `ADMIN_IDS` | رقمك من userinfobot | مثال `123456789` |
-| `APP_URL` | `https://bitpoin.onrender.com` | بدّل الاسم باسم خدمتك |
-| `DATABASE_URL` | *(فارغ)* | PGlite مدمجة |
-| `DB_ENGINE` | `auto` | |
-| `PORT` | `3000` | |
-| `NODE_ENV` | `production` | |
-| `DEMO_MODE` | `false` | |
-| `DEMO_ALLOW_PRODUCTION` | `false` | |
-| `WEBHOOK_SECRET` | اضغط **Generate** | |
-| `TELEGRAM_WEBHOOK_URL` | *(اتركه فارغاً الآن)* | يُملأ في الخطوة 4 |
-| `BACKUP_ENABLED` | `false` | |
+| 💤 النوم | 15 دقيقة خمول → نوم | تلجرام تصحّيها عند رسالة: **30–60 ثانية** |
+| 💾 البيانات | PGlite على قرص مؤقت | **تُفقد** عند كل deploy أو spin-down |
+| 💰 الساعات | 750 ساعة/شهر | النائم لا يُحسب — آمن |
+| ⚡ الذاكرة | 82MB من 512MB | مُقاس فعلياً ✅ |
+| 🔧 Shell | ❌ غير متاح | استخدم السكربت من جهازك (خطوة 4) |
 
-> ⚠️ **لا تضع** `DB_ENGINE=pglite` مع `DATABASE_URL` غير فارغ — يتعارضان.
+### الاستمرارية (مهم)
 
----
+Render Free يمحي القرص عند:
+- كل `git push`
+- كل spin-down (نوم)
+- أي restart
 
-## 3) انتظر أول نشر
+**لحل دائم:** Neon مجاني — 1GB، بدون بطاقة، بلا انتهاء صلاحية.
 
-- Render يبني Docker image (~3–5 دقائق أول مرة).
-- تابع **Logs** حتى ترى:
-  ```
-  [server] BitPoin يعمل على http://0.0.0.0:3000
-  ```
-- افتح `https://<اسم-خدمتك>.onrender.com/healthz` → يجب أن يعيد:
-  ```json
-  {"ok":true,"data":{"db":true,...}}
-  ```
+1. [neon.tech](https://neon.tech) → New Project
+2. انسخ **Connection string** (يبدأ بـ `postgresql://`)
+3. Render → Environment → `DATABASE_URL` = الرابط + `?sslmode=require`
+4. **احذف** `DB_ENGINE` أو اتركه `auto` (لا تضعه `pglite` — يتعارض)
+5. أعد النشر → الترحيل والبذور تلقائية
 
 ---
 
-## 4) تسجيل الويبهوك (الخطوة الحرجة)
-
-البوت لا يستجيب قبل هذه الخطوة.
-
-### الطريقة أ — من لوحة Render (Shell)
-
-Render → خدمتك → **Shell** → نفّذ:
-
-```bash
-npm run webhook:set -- --url https://<اسم-خدمتك>.onrender.com
-```
-
-النتيجة المتوقعة:
-```
-INFO [webhook-setup] البوت { username: 'BitPoinBot', id: ... }
-INFO [webhook-setup] تم تسجيل الويبهوك { url: 'https://.../api/telegram/webhook/...' }
-```
-
-### الطريقة ب — لا يوجد Shell في الخطة المجانية
-
-استخدم `curl` من جهازك (Terminal / CMD):
-
-```bash
-curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://<اسم-خدمتك>.onrender.com/api/telegram/webhook/<WEBHOOK_SECRET>","secret_token":"<WEBHOOK_SECRET>"}'
-```
-
-> `<WEBHOOK_SECRET>` = القيمة التي ولّدها Render.
-
-ثم أضف `TELEGRAM_WEBHOOK_URL` في Environment بنفس الرابط وأعد النشر.
-
-### تحقق
-
-```bash
-curl "https://api.telegram.org/bot<TOKEN>/getWebhookInfo"
-```
-يجب أن يظهر `"url": "https://..."` و `"pending_update_count": 0`.
-
----
-
-## 5) اختبار
-
-1. افتح [@BitPoinBot](https://t.me/BitPoinBot) → **Start**
-2. أرسل `/menu` → يجب أن تظهر قائمة بأزرار
-3. أرسل `/balance` → رصيدك 1000 BTP
-4. أرسل `/daily` → راتبك
-5. من الموقع: `https://<اسم-خدمتك>.onrender.com` → دخول عبر تلجرام
-
----
-
-## 6) النوم المجاني (سلوك متوقع)
-
-| الحالة | النتيجة |
-|---|---|
-| الخدمة نشطة | استجابة فورية |
-| 15 دقيقة بلا زيارات | تنام |
-| رسالة جديدة على البوت | تلجرام تصحّيها → **30–60 ثانية** أول مرة |
-
-**نصيحة:** لا تستخدم "pingers" لكسر النوم — مخالفة لشروط Render وقد يوقفون حسابك.
-
-**الحل الدائم:** خطة Starter بـ 7$/شهر (بدون نوم).
-
----
-
-## 7) البيانات (مهم)
-
-| الوضع | النتيجة |
-|---|---|
-| `DATABASE_URL` فارغ (PGlite) | ✅ يبدأ فوراً — ⚠️ يُفقد مع كل deploy |
-| Neon (مجاني، 1GB، بدون بطاقة) | ✅ دائم — الترحيل بسيط |
-
-### الترحيل إلى Neon (لاحقاً)
-
-1. [neon.tech](https://neon.tech) → أنشئ مشروعاً → انسخ **Connection string**
-2. Render → Environment → `DATABASE_URL` = الرابط (مع `?sslmode=require`)
-3. أعد النشر → الترحيل والبذور تلقائية عند الإقلاع
-4. لنقل البيانات الحالية: Export من الموقع → ثم إعادة إنشاء (أو `pg_dump` من Shell)
-
----
-
-## 8) استكشاف الأخطاء
+## استكشاف الأخطاء
 
 | العَرَض | السبب | الحل |
 |---|---|---|
-| البناء يفشل | ذاكرة غير كافية | أعد المحاولة — نادراً ما يحدث (البناء على منصة Render لا داخل الحاوية) |
-| `502` بعد النشر | aún يقلع (>60 ث) | انتظر دقيقة، راقب Logs |
-| `/healthz` يعيد `db:false` | فشل PGlite | أعد النشر — أو استخدم Neon |
-| البوت لا يرد | ويبهوك غير مسجّل | كرّر الخطوة 4 |
-| البوت يرد «غير مصرّح» | `WEBHOOK_SECRET` لا يطابق | أعد التسجيل بنفس السرّ |
-| `Conflict: can't use getUpdates` | ويبهوك قديم + polling | نفّذ `/bot:delete` أو `deleteWebhook` |
-| `TELEGRAM_WEBHOOK_URL` مضبوط لكن البوت صامت | الرابط لا يطابق `/api/telegram/webhook/<secret>` | تحقق من الرابط في `getWebhookInfo` |
+| `JWT_SECRET مطلوب` | المتغير فارغ | Environment → Generate |
+| `Exited with status 1` فوراً | `npm run start` بدل Docker | استخدم Dockerfile (خطوة 2) |
+| `Port scan timeout` | PORT غير مضبوط | Dockerfile يضبطه — تأكد أنك على `runtime: docker` |
+| `502` بعد النشر | aún يقلع | انتظر دقيقة، راقب Logs |
+| `/healthz` → `db:false` | PGlite فشل | أعد النشر، أو استخدم Neon |
+| البوت صامت | ويبهوك غير مسجّل | أعد الخطوة 4 |
+| البوت يرد `401` | `WEBHOOK_SECRET` لا يطابق | أعد الخطوة 4 بالقيمة الصحيحة |
+| `Conflict: can't use getUpdates` | نسخة قديمة بنفس التوكن | أوقفها، أو `deleteWebhook` |
+| Blueprint يرفض الاسم | خدمة يدوية موجودة | احذفها (خطوة 0) |
+| `npm run start` يفشل | صيغة POSIX في Windows | استخدم Docker — لا تشغّل محلياً هكذا |
