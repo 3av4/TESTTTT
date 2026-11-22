@@ -1,0 +1,27 @@
+name: verify
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: بناء الإنتاج
+        run: npx next build
+      - name: اختبار النسخة الثابتة (المحرك + الواجهة)
+        run: |
+          npm i --no-save jsdom
+          node scripts/test-static-app.mjs
+      - name: فحص ملف النشر
+        run: node scripts/verify-deploy.mjs

@@ -1,22 +1,58 @@
 {
-  "name": "tutorial-with-next",
-  "version": "0.1.0",
+  "name": "bitpoin",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "BitPoin (BTP) — منصة عملة رقمية مجتمعية مع موقع ويب وبوت تلجرام متكاملين",
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx server.ts",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "NODE_ENV=production tsx server.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:backup": "tsx scripts/backup.ts",
+    "db:restore": "tsx scripts/restore.ts",
+    "db:seed-demo": "tsx scripts/seed-demo.ts",
+    "bot:setup": "tsx scripts/set-webhook.ts",
+    "bot:delete": "tsx scripts/delete-webhook.ts",
+    "typecheck": "tsc --noEmit",
+    "smoke": "tsx scripts/smoke.ts",
+    "bot:simulate": "tsx scripts/simulate-bot.ts",
+    "bot:only": "tsx scripts/bot-only.ts",
+    "keepalive": "tsx scripts/keepalive.ts",
+    "webhook:set": "tsx scripts/set-webhook.ts",
+    "render:setup": "tsx scripts/render-setup.ts"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "@electric-sql/pglite-socket": "^0.2.20",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "grammy": "^1.46.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.468.0",
+    "next": "^16.0.8",
+    "pg": "^8.16.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "next": "^16.0.8"
+    "swr": "^2.3.6",
+    "ws": "^8.18.3",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "@types/node": "^20.19.26",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3"
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/ws": "^8.5.13",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3"
   }
 }

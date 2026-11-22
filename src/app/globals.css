@@ -1,8 +1,257 @@
-a.btn-primary {
-  display: inline-block;
-  margin: 0.5rem;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Cairo", "Noto Kufi Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+
+  --color-ink-950: #05070d;
+  --color-ink-900: #080b14;
+  --color-ink-850: #0b0f1a;
+  --color-ink-800: #0f1522;
+  --color-ink-700: #161e2f;
+  --color-ink-600: #1f2a3f;
+
+  --color-gold-300: #ffe08a;
+  --color-gold-400: #ffcc4d;
+  --color-gold-500: #f5b301;
+  --color-gold-600: #d99a00;
+
+  --color-btp-300: #7ff5d0;
+  --color-btp-400: #3ee3ad;
+  --color-btp-500: #10c98f;
+  --color-btp-600: #0aa377;
+
+  --color-danger: #ff5c72;
+  --color-danger-soft: #ff8b9c;
+
+  --shadow-glow: 0 0 40px -8px rgba(62, 227, 173, 0.45);
+  --shadow-gold: 0 0 45px -10px rgba(255, 204, 77, 0.5);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin 14s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-rise: rise 0.45s ease-out both;
 }
 
-a.btn-secondary::before {
-  content: "← ";
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: radial-gradient(1200px 600px at 85% -10%, rgba(16, 201, 143, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 10% -8%, rgba(245, 179, 1, 0.1), transparent 55%),
+    linear-gradient(180deg, #05070d 0%, #080b14 40%, #05070d 100%);
+  color: #e8eefc;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(62, 227, 173, 0.3);
+}
+
+/* شريط تمرير أنيق */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #080b14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2a3f;
+  border-radius: 999px;
+  border: 2px solid #080b14;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2b3a56;
+}
+
+@utility glass {
+  background: linear-gradient(180deg, rgba(22, 30, 47, 0.72), rgba(11, 15, 26, 0.72));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  backdrop-filter: blur(14px);
+}
+
+@utility glass-strong {
+  background: linear-gradient(180deg, rgba(31, 42, 63, 0.9), rgba(11, 15, 26, 0.92));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+@utility gradient-text {
+  background: linear-gradient(120deg, #ffe08a, #3ee3ad 55%, #7ff5d0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility card-hover {
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(62, 227, 173, 0.35);
+  box-shadow: 0 18px 45px -22px rgba(62, 227, 173, 0.55);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* نمط الشبكة الخلفية */
+.grid-bg {
+  background-image: linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* بطاقة معدنية */
+.metal {
+  background: conic-gradient(from 210deg at 50% 50%, #f5b301, #ffe08a, #d99a00, #fff3c4, #f5b301);
+}
+
+/* حركة شريط الأخبار */
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --------------------------------- الوثائق القانونية -------------------------------- */
+.legal-prose h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.legal-prose h2 {
+  margin-top: 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #7ff5d0;
+  padding-inline-start: 0.7rem;
+  border-inline-start: 3px solid rgba(62, 227, 173, 0.55);
+}
+
+.legal-prose h3 {
+  margin-top: 1.25rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #ffe08a;
+}
+
+.legal-prose p,
+.legal-prose li {
+  font-size: 0.85rem;
+  color: #a9b6cd;
+  line-height: 1.95;
+}
+
+.legal-prose ul,
+.legal-prose ol {
+  padding-inline-start: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.legal-prose ul {
+  list-style: disc;
+}
+
+.legal-prose ol {
+  list-style: decimal;
+}
+
+.legal-prose strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.legal-prose code {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.35rem;
+  color: #ffe08a;
+}
+
+.legal-prose a {
+  color: #3ee3ad;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-prose blockquote {
+  border-inline-start: 3px solid rgba(245, 179, 1, 0.5);
+  background: rgba(245, 179, 1, 0.06);
+  border-radius: 0 0.75rem 0.75rem 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+  color: #e8d9a8;
+}
+
+.legal-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.legal-prose th,
+.legal-prose td {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0.65rem;
+  text-align: start;
+  color: #cbd5e1;
+}
+
+.legal-prose th {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font-weight: 800;
 }

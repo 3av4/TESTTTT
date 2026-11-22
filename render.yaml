@@ -1,0 +1,58 @@
+# =============================================================================
+# BitPoin (BTP) — نشر بنقرة على Render
+# -----------------------------------------------------------------------------
+# ⚠️ مهم: هذا الملف يستخدم Docker (وليس runtime: node) لأن المشروع
+#    يحتاج Next.js + Express + grammY في نفس العملية، والـ Dockerfile
+#    يضبط كل شيء (PORT=3000، build، start) بلا أوامر يدوية.
+#
+#    Render لا يسمح بخلط Blueprint (render.yaml) مع خدمة منشأة يدوياً
+#    لها نفس الاسم. احذف خدمتك اليدوية أولاً (Settings → Delete Service).
+#
+# الاستخدام:
+#   1) ارفع هذا الملف إلى الجذر (موجود).
+#   2) Render → New → Blueprint → اختر المستودع والفرع → Apply.
+#   3) أدخل المتغيرات السرّية عند الطلب (لا تضعها في هذا الملف).
+# =============================================================================
+services:
+  - type: web
+    name: bitpoin
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      # ---------- سرّية: تُدخل من لوحة Render ----------
+      - key: BOT_TOKEN
+        sync: false # توكن جديد من @BotFather بعد /revoke
+      - key: ADMIN_IDS
+        value: "8764194314" # Abdnoor — من @userinfobot
+      # APP_URL لا يُضبط هنا: Render يوفّر RENDER_EXTERNAL_URL تلقائياً
+      # و server/config.ts يستخدمه كاحتياطي. (اضبط APP_URL فقط إن أردت دومين مخصص)
+
+      # ---------- مولّدة تلقائياً ----------
+      - key: JWT_SECRET
+        generateValue: true # إلزامي — الخادم يرفض الإقلاع بدونه (32+ حرفاً)
+      - key: WEBHOOK_SECRET
+        generateValue: true
+
+      # ---------- ثابتة ----------
+      - key: BOT_USERNAME
+        value: Bitpoin_bot
+      - key: TELEGRAM_WEBHOOK_URL
+        value: "" # يُملأ بعد أول نشر ثم أعد النشر
+      - key: DATABASE_URL
+        value: "" # فارغ ⇒ PGlite مدمجة (بيانات مؤقتة)
+      - key: DB_ENGINE
+        value: auto
+      - key: PORT
+        value: "3000"
+      - key: NODE_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "false"
+      - key: DEMO_ALLOW_PRODUCTION
+        value: "false"
+      - key: BACKUP_ENABLED
+        value: "false"
